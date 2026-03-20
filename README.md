@@ -133,6 +133,12 @@ O arquivo `api.php` expõe os seguintes endpoints:
 
 ---
 
+## 👨‍💻 Desenvolvedor
+
+**Jordão Nunes**
+
+---
+
 ## 📝 Licença
 
 Uso interno — DP NEWS © 2025
