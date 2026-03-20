@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP NEWS — Quadro de Avisos</title>
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-Avb2QiuTy/Sz0ckk9Llg6A0k7My1p8VF9GjApM1jFJKC3E0iNUxjH0mnZFjdJwO57SBOVT2em4A0YzQxZj2g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Layout exclusivo da tela pública */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 40px 20px 60px;
+    }
+
+    /* Cabeçalho do quadro */
+    .board-header {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .board-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .board-brand-icon {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      color: #000;
+      flex-shrink: 0;
+    }
+    .board-brand-text {
+      line-height: 1.3;
+    }
+    .board-brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: .3px;
+    }
+    .board-brand-text p {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .board-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .board-clock {
+      font-size: .82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Quadro principal */
+    .board {
+      width: 100%;
+      max-width: 860px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 32px rgba(0,0,0,.10);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* Faixa do título do quadro */
+    .board-title-bar {
+      background: var(--accent);   /* amarelo #FFCC00 */
+      padding: 18px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .board-title-bar h2 {
+      color: #000;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .board-title-bar h2 i { color: rgba(0,0,0,.55); }
+    .board-count {
+      background: rgba(0,0,0,.12);
+      color: #000;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 20px;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+
+    /* Lista de avisos */
+    .board-list {
+      padding: 10px 0;
+    }
+    .board-item {
+      padding: 20px 26px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: background var(--transition);
+      animation: fadeSlideIn .3s ease both;
+    }
+    .board-item:last-child { border-bottom: none; }
+    .board-item:hover { background: rgba(46,125,204,.035); }
+    .board-item-urgente {
+      background: rgba(220,53,69,.04);
+      border-left: 4px solid #dc3545;
+    }
+    .board-item-urgente:hover { background: rgba(220,53,69,.07); }
+
+    .board-item-pin {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    .board-item-body { flex: 1; }
+    .board-item-title {
+      font-size: .97rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .board-item-desc {
+      font-size: .875rem;
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .board-item-date {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Estado vazio */
+    .board-empty {
+      padding: 70px 20px;
+      text-align: center;
+    }
+    .board-empty-icon {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: rgba(46,125,204,.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.9rem;
+      color: var(--accent);
+      margin: 0 auto 16px;
+    }
+    .board-empty-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .board-empty-desc  { font-size: .84rem; color: var(--text-muted); }
+
+    @media (max-width: 600px) {
+      body { padding: 20px 12px 40px; }
+      .board-title-bar { padding: 14px 16px; }
+      .board-item { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho externo ao quadro -->
+  <div class="board-header">
+    <div class="board-brand">
+      <div class="board-brand-icon"><i class="fa-solid fa-bullhorn"></i></div>
+      <div class="board-brand-text">
+        <h1>DP NEWS</h1>
+        <p>Quadro de Avisos Oficial</p>
+      </div>
+    </div>
+    <div class="board-meta">
+      <span class="board-clock">
+        <i class="fa-regular fa-clock"></i>
+        <span id="boardClock">—</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Quadro de avisos -->
+  <div class="board">
+
+    <!-- Título do quadro -->
+    <div class="board-title-bar">
+      <h2><i class="fa-solid fa-thumbtack"></i> Avisos</h2>
+      <span class="board-count" id="totalAvisos">0 aviso(s)</span>
+    </div>
+
+    <!-- Lista de avisos -->
+    <div class="board-list" id="avisosContainer">
+      <!-- Preenchido pelo script.js -->
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+    /* Relógio */
+    function tick() {
+      const el = document.getElementById('boardClock');
+      if (!el) return;
+      const agora = new Date();
+      const d = agora.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+      const h = agora.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+      el.textContent = `${d}  ${h}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Recarrega a página automaticamente a cada 90 segundos
+    setTimeout(() => location.reload(), 90 * 1000);
+  </script>
+
+  <script>
+    /* Sobrescreve renderAvisosPublic para usar o layout de quadro (lista) */
+    function renderAvisosPublic() {
+      const container = document.getElementById('avisosContainer');
+      const countEl   = document.getElementById('totalAvisos');
+      if (!container) return;
+
+      const avisos = getAvisosAtivos();  // filtra expirados
+      if (countEl) countEl.textContent = avisos.length + ' aviso' + (avisos.length !== 1 ? 's' : '');
+
+      if (avisos.length === 0) {
+        container.innerHTML = `
+          <div class="board-empty">
+            <div class="board-empty-icon"><i class="fa-regular fa-bell-slash"></i></div>
+            <div class="board-empty-title">Nenhum aviso no momento</div>
+            <div class="board-empty-desc">Não há avisos publicados. Volte mais tarde.</div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = avisos.map((a, i) => `
+        <div class="board-item${a.urgente ? ' board-item-urgente' : ''}" style="animation-delay:${i * 0.06}s">
+          <div class="board-item-pin" style="${a.urgente ? 'background:#dc3545' : ''}"></div>
+          <div class="board-item-body">
+            <div class="board-item-title">
+              ${a.urgente ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#dc3545;color:#fff;font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:4px;margin-right:8px;letter-spacing:.5px;vertical-align:middle;text-transform:uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Urgente</span>` : ''}
+              ${esc(a.titulo)}
+            </div>
+            <div class="board-item-desc">${a.descricao.replace(/\n/g, '<br>')}</div>
+            <div class="board-item-date">
+              <i class="fa-regular fa-calendar"></i> ${formatarData(a.data)}
+            </div>
+          </div>
+        </div>`
+      ).join('');
+    }
+  </script>
+
+</body>
+</html>
