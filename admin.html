@@ -1,453 +1,551 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DP NEWS — Gerenciar Avisos</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DP NEWS — Admin</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23FFCC00'/%3E%3Ctext x='16' y='22' font-family='Arial Black,Arial' font-weight='900' font-size='15' fill='%23000' text-anchor='middle'%3EDP%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f0f0f0;min-height:100vh;display:flex}
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    integrity="sha512-Avb2QiuTy/Sz0ckk9Llg6A0k7My1p8VF9GjApM1jFJKC3E0iNUxjH0mnZFjdJwO57SBOVT2em4A0YzQxZj2g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+/* SIDEBAR */
+.side{width:220px;background:#FFCC00;min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+.side-brand{display:flex;align-items:center;gap:10px;padding:18px 14px;border-bottom:1px solid rgba(0,0,0,.12);text-decoration:none}
+.side-icon{width:34px;height:34px;background:#000;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#FFCC00;font-size:1.1rem;flex-shrink:0}
+.side-name{color:#000;font-size:.85rem;font-weight:900;line-height:1.3}
+.side-name span{display:block;font-size:.68rem;font-weight:400;color:rgba(0,0,0,.5);letter-spacing:.8px;text-transform:uppercase}
+.side-nav{padding:14px 0;flex:1}
+.nav-lbl{font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.4);padding:8px 18px 4px}
+.nav-a{display:flex;align-items:center;gap:12px;padding:10px 18px;color:rgba(0,0,0,.65);text-decoration:none;font-size:.85rem;font-weight:500;border-left:3px solid transparent;transition:background .15s}
+.nav-a:hover{background:rgba(0,0,0,.07);color:#000}
+.nav-a.on{background:rgba(0,0,0,.12);color:#000;border-left-color:#000;font-weight:700}
+.side-foot{padding:14px;border-top:1px solid rgba(0,0,0,.12);font-size:.72rem;color:rgba(0,0,0,.4);text-align:center}
 
-  <!-- Estilos globais -->
-  <link rel="stylesheet" href="style.css" />
+/* MAIN */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.top-title{font-size:1rem;font-weight:700;color:#000}
+.top-sub{font-size:.75rem;color:#888}
+.content{padding:24px;flex:1}
+
+/* STAT */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.stat-ic{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ic-y{background:rgba(255,204,0,.2)}
+.ic-g{background:rgba(40,167,69,.12)}
+.stat-v{font-size:1.6rem;font-weight:900;color:#000;line-height:1}
+.stat-l{font-size:.73rem;color:#888;margin-top:3px}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 2fr;gap:18px;align-items:start}
+
+/* CARD */
+.card{background:#fff;border-radius:8px;border:1px solid #e0e0e0;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden}
+.card-hdr{padding:15px 20px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;justify-content:space-between}
+.card-hdr-t{font-size:.9rem;font-weight:700;color:#000;display:flex;align-items:center;gap:8px}
+.card-hdr-t .ic{color:#FFCC00;font-size:1rem}
+.card-body{padding:20px}
+
+/* FORM */
+.fg{margin-bottom:15px}
+.lbl{display:block;font-size:.8rem;font-weight:600;color:#000;margin-bottom:5px}
+.lbl .ic{color:#FFCC00;margin-right:3px}
+.inp,.ta,.sel{width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:6px;font-size:.86rem;color:#000;background:#fafafa;font-family:inherit;transition:border-color .18s}
+.inp:focus,.ta:focus,.sel:focus{outline:none;border-color:#FFCC00;box-shadow:0 0 0 3px rgba(255,204,0,.22);background:#fff}
+.ta{resize:vertical;min-height:110px}
+.grid2f{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit-banner{background:#fff8e1;border:1.5px solid #ffc107;border-radius:6px;padding:9px 14px;font-size:.82rem;font-weight:600;color:#7a5500;display:none;align-items:center;gap:7px;margin-bottom:14px}
+.edit-banner.on{display:flex}
+
+/* URGENTE TOGGLE */
+.urg-wrap{display:flex;align-items:center;gap:11px;background:#fff5f5;border:1.5px solid rgba(220,53,69,.25);border-radius:7px;padding:11px 14px;margin-bottom:15px;cursor:pointer;user-select:none}
+.urg-box{width:20px;height:20px;border-radius:4px;border:2px solid #dc3545;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .13s;font-size:.7rem;color:#fff;font-weight:900}
+.urg-lbl{font-size:.85rem;font-weight:700;color:#dc3545}
+.urg-sub{font-size:.73rem;color:#aaa;margin-top:1px}
+
+/* BOTÕES */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:6px;border:none;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .15s;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-y{background:#FFCC00;color:#000}
+.btn-y:hover:not(:disabled){background:#F7C600;box-shadow:0 3px 10px rgba(255,204,0,.4)}
+.btn-g{background:#28a745;color:#fff}
+.btn-g:hover:not(:disabled){background:#1e8c38}
+.btn-r{background:#dc3545;color:#fff}
+.btn-r:hover:not(:disabled){background:#b02a37}
+.btn-o{background:transparent;border:1.5px solid #ddd;color:#666}
+.btn-o:hover:not(:disabled){border-color:#FFCC00;background:#FFCC00;color:#000}
+.btn-sm{padding:5px 12px;font-size:.78rem}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* TABELA */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+thead tr{background:#000;color:#fff}
+thead th{padding:10px 14px;font-size:.75rem;letter-spacing:.4px;text-transform:uppercase;font-weight:600;white-space:nowrap}
+tbody tr{border-bottom:1px solid #ebebeb;transition:background .13s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fffdf0}
+tbody td{padding:11px 14px;vertical-align:top}
+.td-t{font-weight:700;color:#000}
+.td-d{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#888}
+.td-dt{white-space:nowrap;color:#888;font-size:.78rem}
+.td-ac{display:flex;gap:5px}
+.tag-urg{display:inline-flex;align-items:center;gap:3px;background:#dc3545;color:#fff;font-size:.62rem;font-weight:800;padding:2px 6px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.tag-exp{display:inline-flex;align-items:center;gap:4px;font-size:.73rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.tag-ok{background:rgba(40,167,69,.12);color:#28a745}
+.tag-no{background:rgba(220,53,69,.12);color:#dc3545}
+.tag-sem{font-size:.73rem;color:#bbb}
+
+/* TOAST */
+.toast-box{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;background:#fff;border-radius:8px;padding:12px 16px;box-shadow:0 6px 24px rgba(0,0,0,.13);border-left:4px solid #28a745;min-width:240px;font-size:.86rem;font-weight:600;animation:tIn .25s ease both;pointer-events:all}
+.toast.e{border-left-color:#dc3545}
+.toast.w{border-left-color:#FFCC00}
+.toast.fade{animation:tOut .25s ease forwards}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.on{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:12px;padding:28px 24px;max-width:360px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.18);transform:scale(.93);transition:transform .2s}
+.modal-bg.on .modal{transform:scale(1)}
+.modal-ic{width:52px;height:52px;border-radius:50%;background:rgba(220,53,69,.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 14px}
+.modal-t{font-size:1rem;font-weight:700;color:#000;margin-bottom:6px}
+.modal-d{font-size:.84rem;color:#888;margin-bottom:18px;line-height:1.5}
+.modal-ac{display:flex;gap:8px;justify-content:center}
+
+/* LOGIN */
+.login-bg{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:#fff;border-radius:14px;padding:36px 32px;width:100%;max-width:340px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.login-ic{width:60px;height:60px;border-radius:50%;background:#FFCC00;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.login-t{font-size:1.1rem;font-weight:900;color:#000;margin-bottom:4px}
+.login-s{font-size:.8rem;color:#888;margin-bottom:20px}
+.login-err{font-size:.78rem;color:#dc3545;font-weight:600;min-height:16px;margin-bottom:12px}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;padding:48px 20px;text-align:center;gap:12px}
+.empty-ic{width:64px;height:64px;border-radius:50%;background:rgba(255,204,0,.18);display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.empty-t{font-size:1rem;font-weight:700;color:#000}
+.empty-d{font-size:.82rem;color:#888;max-width:280px}
+
+/* ANIMAÇÕES */
+@keyframes tIn {from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(30px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* RESPONSIVO */
+@media(max-width:900px){.grid2{grid-template-columns:1fr!important}}
+@media(max-width:680px){
+  .side{width:100%;min-height:auto;position:static;flex-direction:row;align-items:center;flex-wrap:wrap}
+  .side-brand{border-bottom:none;padding:10px 12px}
+  .side-nav{display:flex;flex-direction:row;padding:0;flex-wrap:wrap;width:100%;border-top:1px solid rgba(0,0,0,.10)}
+  .nav-lbl{display:none}
+  .nav-a{padding:9px 12px;border-left:none;border-bottom:3px solid transparent}
+  .nav-a.on{border-left:none;border-bottom-color:#000}
+  .side-foot{display:none}
+  .main{margin-left:0}
+  .topbar{padding:0 14px}
+  .content{padding:14px}
+  body{flex-direction:column}
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
+</style>
 </head>
 <body>
 
-  <!-- =============================================
-       SIDEBAR
-       ============================================= -->
-  <aside class="sidebar">
-    <a href="index.html" class="sidebar-brand">
-      <div class="sidebar-brand-icon"><i class="fa-solid fa-bullhorn"></i></div>
-      <div class="sidebar-brand-text">
-        DP NEWS
-        <span>Sistema de Avisos</span>
-      </div>
-    </a>
+<!-- SIDEBAR -->
+<aside class="side">
+  <a href="index.html" class="side-brand">
+    <div class="side-icon">&#128226;</div>
+    <div class="side-name">DP NEWS<span>Sistema de Avisos</span></div>
+  </a>
+  <nav class="side-nav">
+    <div class="nav-lbl">Menu</div>
+    <a href="index.html" class="nav-a">&#9635; Dashboard</a>
+    <a href="admin.html" class="nav-a on">&#9881; Gerenciar Avisos</a>
+  </nav>
+  <div class="side-foot">&copy; 2025 DP NEWS</div>
+</aside>
 
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">Menu</div>
-
-      <a href="index.html" class="nav-item">
-        <i class="fa-solid fa-gauge-high"></i>
-        <span>Dashboard</span>
-      </a>
-
-      <a href="admin.html" class="nav-item active">
-        <i class="fa-solid fa-sliders"></i>
-        <span>Gerenciar Avisos</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      &copy; 2025 DP NEWS
+<!-- CONTEÚDO -->
+<div class="main">
+  <header class="topbar">
+    <div>
+      <div class="top-title">&#9881; Gerenciar Avisos</div>
+      <div class="top-sub">Cadastre, edite e exclua avisos</div>
     </div>
-  </aside>
+    <a href="index.html" class="btn btn-o btn-sm">&#8592; Ver Painel</a>
+  </header>
 
-  <!-- =============================================
-       CONTEÚDO PRINCIPAL
-       ============================================= -->
-  <div class="main-wrapper">
+  <div class="content">
 
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title"><i class="fa-solid fa-sliders" style="color:var(--accent);margin-right:8px"></i>Gerenciar Avisos</div>
-          <div class="topbar-subtitle">Cadastre, edite e exclua avisos</div>
-        </div>
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-ic ic-y">&#128218;</div>
+        <div><div class="stat-v" id="statTotal">—</div><div class="stat-l">Total de Avisos</div></div>
       </div>
-      <div class="topbar-right">
-        <a href="index.html" class="btn btn-outline btn-sm">
-          <i class="fa-solid fa-arrow-left"></i> Ver Painel
-        </a>
-      </div>
-    </header>
-
-    <!-- Página -->
-    <main class="page-content">
-
-      <!-- Stat cards rápidos -->
-      <div class="stat-cards" style="margin-bottom:24px">
-        <div class="stat-card">
-          <div class="stat-icon blue"><i class="fa-solid fa-database"></i></div>
-          <div class="stat-info">
-            <div class="stat-value" id="totalAvisosAdmin">0</div>
-            <div class="stat-label">Total de Avisos</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">ativo</div>
-            <div class="stat-label">Status do sistema</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Layout de duas colunas em tela grande -->
-      <div style="display:grid;grid-template-columns:1fr 2fr;gap:22px;align-items:start">
-
-        <!-- ====== FORMULÁRIO ====== -->
-        <div class="card" id="formCard">
-          <div class="card-header">
-            <div class="card-header-title">
-              <i class="fa-solid fa-pen-to-square"></i>
-              <span id="formCardTitle">Novo Aviso</span>
-            </div>
-          </div>
-          <div class="card-body">
-
-            <!-- Banner de edição -->
-            <div class="editing-banner" id="editingBanner">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              Editando: <strong id="editingTitle"></strong>
-            </div>
-
-            <!-- Formulário -->
-            <form id="formAviso" novalidate>
-
-              <div class="form-group">
-                <label class="form-label" for="titulo">
-                  <i class="fa-solid fa-heading"></i> Título
-                </label>
-                <input
-                  type="text"
-                  id="titulo"
-                  name="titulo"
-                  class="form-control"
-                  placeholder="Ex: Reunião obrigatória"
-                  maxlength="120"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="descricao">
-                  <i class="fa-solid fa-align-left"></i> Descrição
-                </label>
-                <textarea
-                  id="descricao"
-                  name="descricao"
-                  class="form-control"
-                  placeholder="Descreva o aviso com detalhes..."
-                  maxlength="1000"
-                  required
-                ></textarea>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="data">
-                  <i class="fa-regular fa-calendar"></i> Data
-                </label>
-                <input
-                  type="date"
-                  id="data"
-                  name="data"
-                  class="form-control"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">
-                  <i class="fa-regular fa-hourglass-half"></i> Validade do aviso
-                  <span style="font-weight:400;color:var(--text-muted);font-size:.75rem">(opcional — deixe em branco para não expirar)</span>
-                </label>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <input
-                    type="date"
-                    id="dataValidade"
-                    name="dataValidade"
-                    class="form-control"
-                    placeholder="Data"
-                  />
-                  <input
-                    type="time"
-                    id="horaValidade"
-                    name="horaValidade"
-                    class="form-control"
-                    placeholder="Hora"
-                  />
-                </div>
-              </div>
-
-              <!-- Toggle urgente -->
-              <input type="hidden" id="urgente" name="urgente" value="0" />
-              <div id="urgenteToggle" onclick="toggleUrgente()" style="
-                display:flex;align-items:center;gap:12px;
-                background:rgba(220,53,69,.07);border:1.5px solid rgba(220,53,69,.25);
-                border-radius:8px;padding:12px 16px;margin-bottom:18px;cursor:pointer;
-                user-select:none;
-              ">
-                <div id="urgenteBox" style="
-                  width:22px;height:22px;border-radius:5px;
-                  border:2px solid #dc3545;background:#fff;
-                  display:flex;align-items:center;justify-content:center;
-                  flex-shrink:0;transition:background .15s;
-                "></div>
-                <div>
-                  <div style="font-size:.88rem;font-weight:700;color:#dc3545;display:flex;align-items:center;gap:7px">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Marcar como URGENTE
-                  </div>
-                  <div style="font-size:.75rem;color:#999;margin-top:2px">O aviso aparecerá com destaque vermelho no quadro público</div>
-                </div>
-              </div>
-
-              <!-- Ações do formulário -->
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <button type="submit" id="btnSubmit" class="btn btn-primary" style="flex:1;justify-content:center">
-                  <i class="fa-solid fa-plus"></i> Salvar Aviso
-                </button>
-                <button type="button" id="btnCancelar" class="btn btn-outline" style="flex:1;justify-content:center">
-                  <i class="fa-solid fa-xmark"></i> Cancelar
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-        <!-- /Formulário -->
-
-        <!-- ====== TABELA DE AVISOS ====== -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-title">
-              <i class="fa-solid fa-table-list"></i>
-              Avisos Cadastrados
-            </div>
-            <!-- Contagem inline -->
-            <span style="font-size:.78rem;color:var(--text-muted);font-weight:500">
-              <span id="totalAvisosTable"></span>
-            </span>
-          </div>
-          <div class="card-body" style="padding:0">
-            <div class="table-responsive">
-              <table>
-                <thead>
-                  <tr>
-                    <th><i class="fa-solid fa-heading" style="margin-right:6px"></i>Título</th>
-                    <th><i class="fa-solid fa-align-left" style="margin-right:6px"></i>Descrição</th>
-                    <th><i class="fa-regular fa-calendar" style="margin-right:6px"></i>Data</th>
-                    <th><i class="fa-regular fa-clock" style="margin-right:6px"></i>Validade</th>
-                    <th><i class="fa-solid fa-bolt" style="margin-right:6px"></i>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="adminTbody">
-                  <!-- Preenchido pelo script.js -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <!-- /Tabela -->
-
-      </div>
-      <!-- /Grid de colunas -->
-
-    </main>
-  </div>
-  <!-- /main-wrapper -->
-
-  <!-- =============================================
-       MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
-       ============================================= -->
-  <div class="modal-overlay" id="modalConfirm" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-box">
-      <div class="modal-icon">
-        <i class="fa-solid fa-trash"></i>
-      </div>
-      <div class="modal-title" id="modalTitle">Excluir aviso?</div>
-      <div class="modal-desc">
-        Esta ação é <strong>irreversível</strong>. O aviso será removido permanentemente do sistema.
-      </div>
-      <div class="modal-actions">
-        <button id="btnCancelDelete" class="btn btn-outline">
-          <i class="fa-solid fa-xmark"></i> Cancelar
-        </button>
-        <button id="btnConfirmDelete" class="btn btn-danger">
-          <i class="fa-solid fa-trash"></i> Excluir
-        </button>
+      <div class="stat">
+        <div class="stat-ic ic-g">&#10003;</div>
+        <div><div class="stat-v">ativo</div><div class="stat-l">Status do sistema</div></div>
       </div>
     </div>
-  </div>
 
-  <!-- =============================================
-       TELA DE LOGIN (senha de acesso ao admin)
-       ============================================= -->
-  <div id="loginOverlay" style="
-    position:fixed; inset:0; z-index:9999;
-    background:#000;
-    display:flex; align-items:center; justify-content:center;
-  ">
-    <div style="
-      background:#fff;
-      border-radius:16px;
-      padding:40px 36px;
-      width:100%; max-width:360px;
-      box-shadow:0 20px 60px rgba(0,0,0,.4);
-      text-align:center;
-    ">
-      <!-- Ícone -->
-      <div style="
-        width:64px; height:64px; border-radius:50%;
-        background:#FFCC00; margin:0 auto 20px;
-        display:flex; align-items:center; justify-content:center;
-        font-size:1.8rem; color:#000;
-      ">
-        <i class="fa-solid fa-lock"></i>
+    <!-- Grid -->
+    <div class="grid2">
+
+      <!-- FORMULÁRIO -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-hdr-t"><span class="ic">&#9998;</span><span id="formTit">Novo Aviso</span></div>
+        </div>
+        <div class="card-body">
+          <div class="edit-banner" id="editBanner">&#9888; Editando: <strong id="editTitulo"></strong></div>
+          <form id="form" novalidate>
+
+            <div class="fg">
+              <label class="lbl" for="titulo"><span class="ic">T</span> Título</label>
+              <input type="text" id="titulo" class="inp" placeholder="Ex: Reunião obrigatória" maxlength="120">
+            </div>
+
+            <div class="fg">
+              <label class="lbl" for="desc"><span class="ic">&#182;</span> Descrição <small style="font-weight:400;color:#999">(aceita HTML)</small></label>
+              <textarea id="desc" class="ta" placeholder="Descreva o aviso..."></textarea>
+            </div>
+
+            <div class="fg">
+              <label class="lbl" for="data">&#128197; Data</label>
+              <input type="date" id="data" class="inp">
+            </div>
+
+            <div class="fg">
+              <label class="lbl">&#8987; Validade <small style="font-weight:400;color:#999">(opcional)</small></label>
+              <div class="grid2f">
+                <input type="date" id="dataVal" class="inp">
+                <input type="time" id="horaVal" class="inp">
+              </div>
+            </div>
+
+            <!-- Toggle urgente -->
+            <input type="hidden" id="urgente" value="0">
+            <div class="urg-wrap" onclick="toggleUrg()">
+              <div class="urg-box" id="urgBox"></div>
+              <div>
+                <div class="urg-lbl">&#9888; Marcar como URGENTE</div>
+                <div class="urg-sub">Aparecerá com destaque vermelho no quadro</div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" id="btnSalvar" class="btn btn-y" style="flex:1;justify-content:center">&#10010; Salvar Aviso</button>
+              <button type="button" id="btnCancel" class="btn btn-o" style="flex:1;justify-content:center">&#10005; Cancelar</button>
+            </div>
+
+          </form>
+        </div>
       </div>
 
-      <div style="font-size:1.15rem;font-weight:800;color:#000;margin-bottom:6px">Área Restrita</div>
-      <div style="font-size:.83rem;color:#666;margin-bottom:24px">Digite a senha para acessar o painel admin.</div>
+      <!-- TABELA -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-hdr-t"><span class="ic">&#9776;</span> Avisos Cadastrados</div>
+          <span style="font-size:.76rem;color:#888" id="tblCount"></span>
+        </div>
+        <div style="padding:0">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Descrição</th>
+                  <th>Data</th>
+                  <th>Validade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+                <tr><td colspan="5"><div class="empty"><div class="empty-ic">&#8987;</div><div class="empty-t">Carregando...</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-      <!-- Campo senha -->
-      <input
-        type="password"
-        id="senhaInput"
-        placeholder="Senha"
-        style="
-          width:100%; padding:11px 14px;
-          border:2px solid #e0e0e0; border-radius:8px;
-          font-size:.95rem; font-family:inherit; color:#000;
-          outline:none; margin-bottom:8px;
-          transition:border-color .2s;
-        "
-        onkeydown="if(event.key==='Enter') verificarSenha()"
-        onfocus="this.style.borderColor='#FFCC00'"
-        onblur="this.style.borderColor='#e0e0e0'"
-      />
-
-      <!-- Mensagem de erro -->
-      <div id="loginErro" style="
-        font-size:.8rem; color:#dc3545; font-weight:600;
-        min-height:18px; margin-bottom:14px;
-      "></div>
-
-      <!-- Botão entrar -->
-      <button onclick="verificarSenha()" style="
-        width:100%; padding:11px;
-        background:#FFCC00; color:#000;
-        border:none; border-radius:8px;
-        font-size:.95rem; font-weight:700;
-        cursor:pointer; font-family:inherit;
-        transition:background .2s, box-shadow .2s;
-      "
-        onmouseover="this.style.background='#F7C600';this.style.boxShadow='0 4px 14px rgba(255,204,0,.5)'"
-        onmouseout="this.style.background='#FFCC00';this.style.boxShadow='none'"
-      >
-        <i class="fa-solid fa-right-to-bracket" style="margin-right:7px"></i> Entrar
-      </button>
     </div>
   </div>
+</div>
 
-  <!-- Script principal -->
-  <script src="script.js"></script>
+<!-- MODAL EXCLUSÃO -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-ic">&#128465;</div>
+    <div class="modal-t">Excluir aviso?</div>
+    <div class="modal-d">Esta ação é <strong>irreversível</strong>. O aviso será removido permanentemente.</div>
+    <div class="modal-ac">
+      <button id="btnMCancel" class="btn btn-o">&#10005; Cancelar</button>
+      <button id="btnMConfirm" class="btn btn-r">&#128465; Excluir</button>
+    </div>
+  </div>
+</div>
 
-  <!-- Lógica de autenticação -->
-  <script>
-    // ⚠️ Altere a senha aqui:
-    const ADMIN_SENHA = 'SUASENHAAQUI';
+<!-- LOGIN -->
+<div class="login-bg" id="login">
+  <div class="login-box" id="loginBox">
+    <div class="login-ic">&#128274;</div>
+    <div class="login-t">Área Restrita</div>
+    <div class="login-s">Digite a senha para acessar o painel.</div>
+    <input type="password" id="senhaInp" class="inp" placeholder="Senha"
+      style="margin-bottom:8px"
+      onkeydown="if(event.key==='Enter')chkSenha()"
+      onfocus="this.style.borderColor='#FFCC00'"
+      onblur="this.style.borderColor='#ddd'">
+    <div class="login-err" id="loginErr"></div>
+    <button onclick="chkSenha()" class="btn btn-y" style="width:100%;justify-content:center">
+      &#10140; Entrar
+    </button>
+  </div>
+</div>
 
-    const SESSION_KEY = 'dp_admin_auth';
+<script>
+var API    = 'api.php';
+var SENHA  = 'Dpj255343';
+var SESS   = 'dp_admin_auth';
 
-    function verificarSenha() {
-      const input = document.getElementById('senhaInput');
-      const erro  = document.getElementById('loginErro');
+/* --- AUTH --- */
+function chkSenha(){
+  var v=document.getElementById('senhaInp').value;
+  var e=document.getElementById('loginErr');
+  if(v===SENHA){
+    try{sessionStorage.setItem(SESS,'1');}catch(ex){}
+    document.getElementById('login').style.display='none';
+    document.body.style.overflow='';
+  } else {
+    e.textContent='Senha incorreta.';
+    document.getElementById('senhaInp').value='';
+    document.getElementById('senhaInp').focus();
+    var b=document.getElementById('loginBox');
+    b.style.animation='shake .3s ease';
+    b.addEventListener('animationend',function(){b.style.animation='';},{once:true});
+  }
+}
+try{
+  if(sessionStorage.getItem(SESS)==='1'){
+    document.getElementById('login').style.display='none';
+  } else { document.body.style.overflow='hidden'; }
+}catch(ex){ document.getElementById('login').style.display='none'; }
 
-      if (input.value === ADMIN_SENHA) {
-        sessionStorage.setItem(SESSION_KEY, '1');
-        document.getElementById('loginOverlay').style.display = 'none';
-        erro.textContent = '';
-      } else {
-        erro.textContent = 'Senha incorreta. Tente novamente.';
-        input.value = '';
-        input.focus();
-        // Vibra o card para feedback visual
-        const box = input.closest('div');
-        box.style.animation = 'shake .35s ease';
-        box.addEventListener('animationend', () => box.style.animation = '', { once: true });
-      }
-    }
+/* --- URGENTE --- */
+function toggleUrg(){
+  var inp=document.getElementById('urgente');
+  var box=document.getElementById('urgBox');
+  if(inp.value==='1'){ inp.value='0'; box.style.background='#fff'; box.textContent=''; }
+  else { inp.value='1'; box.style.background='#dc3545'; box.textContent='✓'; }
+}
+function setUrg(v){
+  var inp=document.getElementById('urgente');
+  var box=document.getElementById('urgBox');
+  if(v){ inp.value='1'; box.style.background='#dc3545'; box.textContent='✓'; }
+  else  { inp.value='0'; box.style.background='#fff'; box.textContent=''; }
+}
 
-    // Se já autenticado nesta sessão, remove overlay direto
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
-      document.getElementById('loginOverlay').style.display = 'none';
-    } else {
-      // Bloqueia scroll do fundo enquanto overlay estiver ativo
-      document.body.style.overflow = 'hidden';
-      document.getElementById('loginOverlay').addEventListener('transitionend', () => {
-        document.body.style.overflow = '';
-      });
-    }
-  </script>
+/* --- UTILS --- */
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function hoje(){var n=new Date();return n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2);}
+function fmtD(s){if(!s)return '—';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function isExp(a){
+  if(!a.dataValidade) return false;
+  var h=a.horaValidade||'23:59';
+  return new Date()>new Date(a.dataValidade+'T'+h+':00');
+}
 
-  <style>
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%      { transform: translateX(-8px); }
-      40%      { transform: translateX(8px); }
-      60%      { transform: translateX(-6px); }
-      80%      { transform: translateX(6px); }
-    }
-  </style>
+/* --- TOAST --- */
+var TC=null;
+function toast(msg,tipo,dur){
+  if(!TC){TC=document.createElement('div');TC.className='toast-box';document.body.appendChild(TC);}
+  var t=document.createElement('div');
+  var cl=tipo==='e'?'e':tipo==='w'?'w':'';
+  t.className='toast'+' '+cl;
+  t.innerHTML=(tipo==='e'?'&#10007;':tipo==='w'?'&#9888;':'&#10003;')+' '+esc(msg);
+  TC.appendChild(t);
+  setTimeout(function(){
+    t.className='toast '+cl+' fade';
+    t.addEventListener('animationend',function(){t.parentNode&&t.parentNode.removeChild(t);},{once:true});
+  },dur||3000);
+}
 
-  <script>
-    /* Toggle urgente customizado — sem checkbox nativo para evitar bugs */
-    function toggleUrgente() {
-      const input  = document.getElementById('urgente');
-      const box    = document.getElementById('urgenteBox');
-      const ativo  = input.value === '1';
-      if (ativo) {
-        input.value      = '0';
-        box.style.background = '#fff';
-        box.innerHTML    = '';
-      } else {
-        input.value      = '1';
-        box.style.background = '#dc3545';
-        box.innerHTML    = '<i class="fa-solid fa-check" style="color:#fff;font-size:.75rem"></i>';
-      }
-    }
+/* --- MODAL --- */
+var pendId=null;
+function openModal(id){pendId=id;document.getElementById('modal').className='modal-bg on';}
+function closeModal(){pendId=null;document.getElementById('modal').className='modal-bg';}
 
-    /* Seta o estado visual do toggle (usado ao editar e ao limpar) */
-    function setUrgenteVisual(valor) {
-      const input = document.getElementById('urgente');
-      const box   = document.getElementById('urgenteBox');
-      if (valor) {
-        input.value          = '1';
-        box.style.background = '#dc3545';
-        box.innerHTML        = '<i class="fa-solid fa-check" style="color:#fff;font-size:.75rem"></i>';
-      } else {
-        input.value          = '0';
-        box.style.background = '#fff';
-        box.innerHTML        = '';
-      }
-    }
-  </script>
+/* --- XHR helper --- */
+function get(url,cb,err){
+  var x=new XMLHttpRequest();
+  x.open('GET',url,true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4) return;
+    if(x.status===200){try{cb(JSON.parse(x.responseText));}catch(e){err&&err('Resposta inválida');}}
+    else{err&&err('HTTP '+x.status);}
+  };
+  x.send();
+}
+function post(url,data,cb,err){
+  var x=new XMLHttpRequest();
+  x.open('POST',url,true);
+  x.setRequestHeader('Content-Type','application/json');
+  x.onreadystatechange=function(){
+    if(x.readyState!==4) return;
+    if(x.status===200){try{cb(JSON.parse(x.responseText));}catch(e){err&&err('Resposta inválida');}}
+    else{err&&err('HTTP '+x.status);}
+  };
+  x.send(JSON.stringify(data));
+}
 
-  <!-- Sincroniza a contagem na tabela com a do stat card -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const adminCount = document.getElementById('totalAvisosAdmin');
-      const tableCount = document.getElementById('totalAvisosTable');
-      const observer   = new MutationObserver(() => {
-        if (tableCount && adminCount) tableCount.textContent = adminCount.textContent + ' registro(s)';
-      });
-      if (adminCount) observer.observe(adminCount, { childList: true, characterData: true, subtree: true });
+/* --- RENDER TABELA --- */
+function renderTabela(){
+  var tbody=document.getElementById('tbody');
+  var sc=document.getElementById('statTotal');
+  var tc=document.getElementById('tblCount');
+  tbody.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-ic">&#8987;</div><div class="empty-t">Carregando...</div></div></td></tr>';
+
+  get(API+'?action=list', function(lista){
+    lista.sort(function(a,b){
+      if(a.urgente!==b.urgente) return a.urgente?-1:1;
+      return new Date(b.data)-new Date(a.data);
     });
-  </script>
+    sc.textContent=lista.length;
+    tc.textContent=lista.length+' registro(s)';
 
-  <!-- Torna o layout responsivo em telas pequenas -->
-  <style>
-    @media (max-width: 900px) {
-      main > div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-      }
+    if(!lista.length){
+      tbody.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-ic">&#128203;</div><div class="empty-t">Nenhum aviso</div><div class="empty-d">Use o formulário para criar o primeiro aviso.</div></div></td></tr>';
+      return;
     }
-  </style>
+
+    var html='';
+    for(var i=0;i<lista.length;i++){
+      var a=lista[i];
+      var exp=isExp(a);
+      var horaV=a.horaValidade||'';
+      var valLabel=fmtD(a.dataValidade)+(horaV?' '+horaV:'');
+      var valHtml=a.dataValidade
+        ?'<span class="tag-exp '+(exp?'tag-no':'tag-ok')+'">'+(exp?'&#10007; Expirado':'&#10003; Até '+valLabel)+'</span>'
+        :'<span class="tag-sem">&#8734; Sem validade</span>';
+      var urgTag=a.urgente?'<span class="tag-urg">&#9888; URGENTE</span>':'';
+      html+='<tr data-id="'+a.id+'" style="'+(exp?'opacity:.55':'')+'">'
+        +'<td class="td-t">'+urgTag+esc(a.titulo)+'</td>'
+        +'<td class="td-d">'+a.descricao.replace(/<[^>]*>/g,'').substring(0,70)+(a.descricao.length>70?'…':'')+'</td>'
+        +'<td class="td-dt">'+fmtD(a.data)+'</td>'
+        +'<td>'+valHtml+'</td>'
+        +'<td><div class="td-ac">'
+        +'<button class="btn btn-sm" style="background:#FFCC00;color:#000;font-weight:700" data-edit="'+a.id+'">&#9998; Editar</button>'
+        +'<button class="btn btn-r btn-sm" data-del="'+a.id+'">&#128465;</button>'
+        +'</div></td>'
+        +'</tr>';
+    }
+    tbody.innerHTML=html;
+
+    // Eventos
+    var edits=tbody.querySelectorAll('[data-edit]');
+    for(var j=0;j<edits.length;j++){
+      (function(b){b.addEventListener('click',function(){carregarEdicao(b.getAttribute('data-edit'),lista);});})(edits[j]);
+    }
+    var dels=tbody.querySelectorAll('[data-del]');
+    for(var k=0;k<dels.length;k++){
+      (function(b){b.addEventListener('click',function(){openModal(b.getAttribute('data-del'));});})(dels[k]);
+    }
+
+  }, function(err){
+    tbody.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-ic">&#9888;</div><div class="empty-t">Erro ao carregar</div><div class="empty-d">'+esc(err)+'</div></div></td></tr>';
+    sc.textContent='err';
+  });
+}
+
+/* --- EDIÇÃO --- */
+var editId=null;
+function carregarEdicao(id,lista){
+  var a=null;
+  for(var i=0;i<lista.length;i++){if(String(lista[i].id)===String(id)){a=lista[i];break;}}
+  if(!a) return;
+  editId=id;
+  document.getElementById('titulo').value   = a.titulo;
+  document.getElementById('desc').value     = a.descricao;
+  document.getElementById('data').value     = a.data;
+  document.getElementById('dataVal').value  = a.dataValidade||'';
+  document.getElementById('horaVal').value  = a.horaValidade||'';
+  setUrg(!!a.urgente);
+  var ban=document.getElementById('editBanner');
+  document.getElementById('editTitulo').textContent=a.titulo;
+  ban.className='edit-banner on';
+  var btn=document.getElementById('btnSalvar');
+  btn.textContent='&#10004; Salvar Alterações';
+  btn.className='btn btn-g';
+  document.getElementById('titulo').scrollIntoView({behavior:'smooth',block:'center'});
+  document.getElementById('titulo').focus();
+}
+function cancelarEdicao(){
+  editId=null;
+  document.getElementById('form').reset();
+  document.getElementById('data').value=hoje();
+  setUrg(false);
+  document.getElementById('editBanner').className='edit-banner';
+  var btn=document.getElementById('btnSalvar');
+  btn.innerHTML='&#10010; Salvar Aviso';
+  btn.className='btn btn-y';
+}
+
+/* --- INIT --- */
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('data').value=hoje();
+
+  document.getElementById('form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var titulo  =document.getElementById('titulo').value.trim();
+    var desc    =document.getElementById('desc').value.trim();
+    var data    =document.getElementById('data').value;
+    var dataVal =document.getElementById('dataVal').value;
+    var horaVal =document.getElementById('horaVal').value;
+    var urgente =document.getElementById('urgente').value==='1';
+    if(!titulo||!desc||!data){toast('Preencha todos os campos obrigatórios.','w');return;}
+    if(dataVal&&dataVal<data){toast('A validade não pode ser anterior à data.','w');return;}
+    var btn=document.getElementById('btnSalvar');
+    btn.disabled=true;
+    var orig=btn.innerHTML;
+    btn.innerHTML='... Salvando';
+    var payload={titulo:titulo,descricao:desc,data:data,dataValidade:dataVal,horaValidade:horaVal,urgente:urgente};
+    var action=editId?'update':'save';
+    if(editId) payload.id=editId;
+    post(API+'?action='+action, payload, function(r){
+      btn.disabled=false; btn.innerHTML=orig;
+      if(r.ok){
+        toast(editId?'Aviso atualizado!':'Aviso publicado!','s');
+        cancelarEdicao();
+        renderTabela();
+      } else { toast('Erro: '+(r.erro||'desconhecido'),'e'); }
+    }, function(err){
+      btn.disabled=false; btn.innerHTML=orig;
+      toast('Erro: '+err,'e');
+    });
+  });
+
+  document.getElementById('btnCancel').addEventListener('click',cancelarEdicao);
+
+  document.getElementById('btnMConfirm').addEventListener('click',function(){
+    if(!pendId) return;
+    var id=pendId;
+    closeModal();
+    post(API+'?action=delete',{id:id},function(r){
+      if(r.ok){toast('Aviso excluído.','s');renderTabela();}
+      else{toast('Erro: '+(r.erro||'desconhecido'),'e');}
+    },function(err){toast('Erro: '+err,'e');});
+  });
+  document.getElementById('btnMCancel').addEventListener('click',closeModal);
+  document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+  renderTabela();
+});
+</script>
 </body>
 </html>

@@ -1,290 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DP NEWS — Quadro de Avisos</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    integrity="sha512-Avb2QiuTy/Sz0ckk9Llg6A0k7My1p8VF9GjApM1jFJKC3E0iNUxjH0mnZFjdJwO57SBOVT2em4A0YzQxZj2g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <link rel="stylesheet" href="style.css" />
-
-  <style>
-    /* Layout exclusivo da tela pública */
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      background: var(--bg);
-      padding: 40px 20px 60px;
-    }
-
-    /* Cabeçalho do quadro */
-    .board-header {
-      width: 100%;
-      max-width: 860px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .board-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .board-brand-icon {
-      width: 48px; height: 48px;
-      background: var(--accent);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem;
-      color: #000;
-      flex-shrink: 0;
-    }
-    .board-brand-text {
-      line-height: 1.3;
-    }
-    .board-brand-text h1 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: .3px;
-    }
-    .board-brand-text p {
-      font-size: .78rem;
-      color: var(--text-muted);
-      margin: 0;
-    }
-    .board-meta {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .board-clock {
-      font-size: .82rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Quadro principal */
-    .board {
-      width: 100%;
-      max-width: 860px;
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 4px 32px rgba(0,0,0,.10);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    /* Faixa do título do quadro */
-    .board-title-bar {
-      background: var(--accent);   /* amarelo #FFCC00 */
-      padding: 18px 26px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .board-title-bar h2 {
-      color: #000;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: .5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .board-title-bar h2 i { color: rgba(0,0,0,.55); }
-    .board-count {
-      background: rgba(0,0,0,.12);
-      color: #000;
-      font-size: .72rem;
-      font-weight: 700;
-      padding: 3px 11px;
-      border-radius: 20px;
-      letter-spacing: .4px;
-      white-space: nowrap;
-    }
-
-    /* Lista de avisos */
-    .board-list {
-      padding: 10px 0;
-    }
-    .board-item {
-      padding: 20px 26px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 18px;
-      align-items: flex-start;
-      transition: background var(--transition);
-      animation: fadeSlideIn .3s ease both;
-    }
-    .board-item:last-child { border-bottom: none; }
-    .board-item:hover { background: rgba(46,125,204,.035); }
-    .board-item-urgente {
-      background: rgba(220,53,69,.04);
-      border-left: 4px solid #dc3545;
-    }
-    .board-item-urgente:hover { background: rgba(220,53,69,.07); }
-
-    .board-item-pin {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-      margin-top: 7px;
-    }
-
-    .board-item-body { flex: 1; }
-    .board-item-title {
-      font-size: .97rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .board-item-desc {
-      font-size: .875rem;
-      color: var(--text);
-      line-height: 1.65;
-    }
-    .board-item-date {
-      font-size: .75rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    /* Estado vazio */
-    .board-empty {
-      padding: 70px 20px;
-      text-align: center;
-    }
-    .board-empty-icon {
-      width: 68px; height: 68px;
-      border-radius: 50%;
-      background: rgba(46,125,204,.10);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.9rem;
-      color: var(--accent);
-      margin: 0 auto 16px;
-    }
-    .board-empty-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-    .board-empty-desc  { font-size: .84rem; color: var(--text-muted); }
-
-    @media (max-width: 600px) {
-      body { padding: 20px 12px 40px; }
-      .board-title-bar { padding: 14px 16px; }
-      .board-item { padding: 16px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DP NEWS</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23FFCC00'/%3E%3Ctext x='16' y='22' font-family='Arial Black,Arial' font-weight='900' font-size='15' fill='%23000' text-anchor='middle'%3EDP%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f0f0f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 14px 50px}
+/* Cabeçalho */
+.hdr{width:100%;max-width:800px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:44px;height:44px;background:#FFCC00;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.brand-name{font-size:1.15rem;font-weight:900;color:#000}
+.brand-sub{font-size:.75rem;color:#666}
+.clock{font-size:.8rem;color:#666}
+/* Quadro */
+.board{width:100%;max-width:800px;background:#fff;border-radius:12px;box-shadow:0 3px 20px rgba(0,0,0,.10);overflow:hidden}
+.board-bar{background:#FFCC00;padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
+.board-bar h2{font-size:.95rem;font-weight:800;color:#000}
+.board-count{background:rgba(0,0,0,.15);color:#000;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+/* Itens */
+.item{padding:18px 22px;border-bottom:1px solid #e8e8e8;display:flex;gap:14px;align-items:flex-start;transition:background .15s}
+.item:last-child{border-bottom:none}
+.item:hover{background:#fafafa}
+.item-urg{background:#fff5f5;border-left:4px solid #dc3545}
+.item-urg:hover{background:#ffefef}
+.dot{width:9px;height:9px;border-radius:50%;background:#FFCC00;flex-shrink:0;margin-top:6px}
+.dot-urg{background:#dc3545}
+.item-body{flex:1}
+.item-title{font-size:.93rem;font-weight:700;color:#000;margin-bottom:5px;line-height:1.4}
+.item-desc{font-size:.855rem;color:#333;line-height:1.6}
+.item-date{font-size:.73rem;color:#888;margin-top:8px}
+.tag-urg{display:inline-flex;align-items:center;gap:4px;background:#dc3545;color:#fff;font-size:.63rem;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:7px;letter-spacing:.4px;text-transform:uppercase;vertical-align:middle}
+/* Vazio / Erro */
+.empty{padding:60px 20px;text-align:center}
+.empty-icon{font-size:2.5rem;margin-bottom:12px}
+.empty-title{font-size:.95rem;font-weight:700;color:#000;margin-bottom:5px}
+.empty-desc{font-size:.82rem;color:#888}
+/* Animação */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.item{animation:fadeUp .28s ease both}
+/* Responsivo */
+@media(max-width:540px){.item{padding:14px 14px}.board-bar{padding:13px 14px}}
+</style>
 </head>
 <body>
 
-  <!-- Cabeçalho externo ao quadro -->
-  <div class="board-header">
-    <div class="board-brand">
-      <div class="board-brand-icon"><i class="fa-solid fa-bullhorn"></i></div>
-      <div class="board-brand-text">
-        <h1>DP NEWS</h1>
-        <p>Quadro de Avisos Oficial</p>
-      </div>
-    </div>
-    <div class="board-meta">
-      <span class="board-clock">
-        <i class="fa-regular fa-clock"></i>
-        <span id="boardClock">—</span>
-      </span>
+<div class="hdr">
+  <div class="brand">
+    <div class="brand-icon">&#128226;</div>
+    <div>
+      <div class="brand-name">DP NEWS</div>
+      <div class="brand-sub">Quadro de Avisos Oficial</div>
     </div>
   </div>
+  <span class="clock" id="clock">—</span>
+</div>
 
-  <!-- Quadro de avisos -->
-  <div class="board">
-
-    <!-- Título do quadro -->
-    <div class="board-title-bar">
-      <h2><i class="fa-solid fa-thumbtack"></i> Avisos</h2>
-      <span class="board-count" id="totalAvisos">0 aviso(s)</span>
-    </div>
-
-    <!-- Lista de avisos -->
-    <div class="board-list" id="avisosContainer">
-      <!-- Preenchido pelo script.js -->
-    </div>
-
+<div class="board">
+  <div class="board-bar">
+    <h2>&#128204; Avisos</h2>
+    <span class="board-count" id="total">—</span>
   </div>
+  <div id="lista"><div class="empty"><div class="empty-icon">&#8987;</div><div class="empty-title">Carregando...</div></div></div>
+</div>
 
-  <script src="script.js"></script>
+<script>
+var API = 'api.php';
 
-  <script>
-    /* Relógio */
-    function tick() {
-      const el = document.getElementById('boardClock');
-      if (!el) return;
-      const agora = new Date();
-      const d = agora.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
-      const h = agora.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-      el.textContent = `${d}  ${h}`;
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function isExp(a){
+  if(!a.dataValidade) return false;
+  var h=a.horaValidade||'23:59';
+  return new Date()>new Date(a.dataValidade+'T'+h+':00');
+}
+
+function fmtData(s){
+  if(!s) return '—';
+  var p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
+}
+
+function render(avisos){
+  var el=document.getElementById('lista');
+  var ct=document.getElementById('total');
+  var ativos=avisos.filter(function(a){return !isExp(a);});
+  ativos.sort(function(a,b){
+    if(a.urgente!==b.urgente) return a.urgente?-1:1;
+    return new Date(b.data)-new Date(a.data);
+  });
+  ct.textContent=ativos.length+' aviso'+(ativos.length!==1?'s':'');
+  if(!ativos.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128276;</div><div class="empty-title">Nenhum aviso no momento</div><div class="empty-desc">Volte mais tarde.</div></div>';
+    return;
+  }
+  var html='';
+  for(var i=0;i<ativos.length;i++){
+    var a=ativos[i];
+    var urg=a.urgente?'item-urg':'';
+    var dot=a.urgente?'dot dot-urg':'dot';
+    var tag=a.urgente?'<span class="tag-urg">&#9888; Urgente</span>':'';
+    var desc=String(a.descricao||'').replace(/\n/g,'<br>');
+    html+='<div class="item '+urg+'" style="animation-delay:'+(i*0.055)+'s">'
+      +'<div class="'+dot+'"></div>'
+      +'<div class="item-body">'
+      +'<div class="item-title">'+tag+esc(a.titulo)+'</div>'
+      +'<div class="item-desc">'+desc+'</div>'
+      +'<div class="item-date">&#128197; '+fmtData(a.data)+'</div>'
+      +'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function carregar(){
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',API+'?action=list',true);
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4) return;
+    if(xhr.status===200){
+      try{ render(JSON.parse(xhr.responseText)); }
+      catch(e){ mostrarErro('Resposta inválida do servidor.'); }
+    } else {
+      mostrarErro('Erro HTTP '+xhr.status);
     }
-    tick();
-    setInterval(tick, 1000);
+  };
+  xhr.send();
+}
 
-    // Recarrega a página automaticamente a cada 90 segundos
-    setTimeout(() => location.reload(), 90 * 1000);
-  </script>
+function mostrarErro(msg){
+  document.getElementById('lista').innerHTML='<div class="empty"><div class="empty-icon">&#9888;</div><div class="empty-title">Erro ao carregar</div><div class="empty-desc">'+esc(msg)+'</div></div>';
+  document.getElementById('total').textContent='erro';
+}
 
-  <script>
-    /* Sobrescreve renderAvisosPublic para usar o layout de quadro (lista) */
-    function renderAvisosPublic() {
-      const container = document.getElementById('avisosContainer');
-      const countEl   = document.getElementById('totalAvisos');
-      if (!container) return;
+function tick(){
+  var n=new Date();
+  var d=('0'+n.getDate()).slice(-2)+'/'+('0'+(n.getMonth()+1)).slice(-2)+'/'+n.getFullYear();
+  var h=('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);
+  document.getElementById('clock').textContent=d+'  '+h;
+}
 
-      const avisos = getAvisosAtivos();  // filtra expirados
-      if (countEl) countEl.textContent = avisos.length + ' aviso' + (avisos.length !== 1 ? 's' : '');
-
-      if (avisos.length === 0) {
-        container.innerHTML = `
-          <div class="board-empty">
-            <div class="board-empty-icon"><i class="fa-regular fa-bell-slash"></i></div>
-            <div class="board-empty-title">Nenhum aviso no momento</div>
-            <div class="board-empty-desc">Não há avisos publicados. Volte mais tarde.</div>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = avisos.map((a, i) => `
-        <div class="board-item${a.urgente ? ' board-item-urgente' : ''}" style="animation-delay:${i * 0.06}s">
-          <div class="board-item-pin" style="${a.urgente ? 'background:#dc3545' : ''}"></div>
-          <div class="board-item-body">
-            <div class="board-item-title">
-              ${a.urgente ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#dc3545;color:#fff;font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:4px;margin-right:8px;letter-spacing:.5px;vertical-align:middle;text-transform:uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Urgente</span>` : ''}
-              ${esc(a.titulo)}
-            </div>
-            <div class="board-item-desc">${a.descricao.replace(/\n/g, '<br>')}</div>
-            <div class="board-item-date">
-              <i class="fa-regular fa-calendar"></i> ${formatarData(a.data)}
-            </div>
-          </div>
-        </div>`
-      ).join('');
-    }
-  </script>
-
+carregar();
+tick();
+setInterval(tick,1000);
+setTimeout(function(){location.reload();},90000);
+</script>
 </body>
 </html>
